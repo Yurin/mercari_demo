@@ -30,7 +30,7 @@ class _PhotoSelectionScreenState extends State<PhotoSelectionScreen> {
 
   Future<Response> _sendImagesToBackend(
       double moneyAmount, List<XFile> images) async {
-    var uri = Uri.parse('http://localhost:9000/analyze');
+    var uri = Uri.parse('https://mercari-bold-backend.onrender.com/analyze');
     var request = http.MultipartRequest('POST', uri);
     request.fields['budget'] = moneyAmount.toString();
 
