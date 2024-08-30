@@ -140,15 +140,7 @@
 // }
 
 import 'package:flutter/material.dart';
-
-// Sample data class definitions for item information
-class ItemData {
-  final String imageName; // Assuming this is the URL of the image
-  final String item;
-  final double price;
-
-  ItemData({required this.imageName, required this.item, required this.price});
-}
+import '../models/types.dart';
 
 // Screen that displays a list of items passed from the previous page
 class AISelectionScreen extends StatelessWidget {
@@ -156,12 +148,12 @@ class AISelectionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Retrieve arguments passed from the previous page
-    final Map<String, dynamic> arguments =
+    // Retrieve arguments as a Map
+    final Map<String, dynamic> args =
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-
-    // Extract the list of items from the arguments
-    final List<ItemData> images = arguments['items'] ?? [];
+    final String money = args['money'];
+    final Response itemDataList = args['data'];
+    var images = itemDataList.allItems;
 
     return Scaffold(
       appBar: AppBar(

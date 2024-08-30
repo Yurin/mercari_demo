@@ -21,11 +21,11 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) =>  SellTabScreen(),
+        '/': (context) => const SellTabScreen(),
         '/photo_selection': (context) => const PhotoSelectionScreen(), 
         '/aiSelection': (context) => const AISelectionScreen(),
-        '/listing': (context) =>  ListingScreen(),
-        '/listingComplete': (context) =>  CompleteScreen(),
+        '/listing': (context) => const ListingScreen(),
+        '/listingComplete': (context) => const CompleteScreen(),
       },
     );
   }
@@ -43,7 +43,7 @@ class _MyHomePageState extends State<MyHomePage> {
   static final List<Widget> _widgetOptions = <Widget>[
     const Text('Home Page'),
     const Text('Favorites'),
-    SellTabScreen(),
+    const SellTabScreen(), // `sell_tab.dart`を呼び出します
     const Text('Inbox'),
     const Text('Profile'),
   ];

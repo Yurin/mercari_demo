@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class SellTabScreen extends StatefulWidget {
+  const SellTabScreen({super.key});
+
   @override
   _SellTabScreenState createState() => _SellTabScreenState();
 }
@@ -8,12 +10,12 @@ class SellTabScreen extends StatefulWidget {
 class _SellTabScreenState extends State<SellTabScreen> {
   int _selectedIndex = 2;  // Default to "Sell" tab
 
-  static List<Widget> _widgetOptions = <Widget>[
-    Text('Home Page'),
-    Text('Favorites'),
-    Text('Sell Page'),
-    Text('Inbox'),
-    Text('Profile'),
+  static final List<Widget> _widgetOptions = <Widget>[
+    const Text('Home Page'),
+    const Text('Favorites'),
+    const Text('Sell Page'),
+    const Text('Inbox'),
+    const Text('Profile'),
   ];
 
   void _onItemTapped(int index) {
@@ -27,9 +29,9 @@ class _SellTabScreenState extends State<SellTabScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Seller Page')),
+      appBar: AppBar(title: const Text('Seller Page')),
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           image: DecorationImage(
             image: AssetImage('assets/back.jpg'),  // Path to your background image asset
             fit: BoxFit.cover,  // Fitting the image to cover entire background
@@ -39,15 +41,15 @@ class _SellTabScreenState extends State<SellTabScreen> {
           children: [
             Expanded(
               child: Align(
-                alignment: Alignment(0.0, -0.0),  // Shift button up slightly
+                alignment: const Alignment(0.0, -0.0),  // Shift button up slightly
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.pushNamed(context, '/photo_selection');
                   },
-                  child: Text('Help me find items to sell'),
                   style: ElevatedButton.styleFrom(
-                    minimumSize: Size(200, 60),  // Set minimum button size
+                    minimumSize: const Size(200, 60),  // Set minimum button size
                   ),
+                  child: const Text('Help me find items to sell'),
                 ),
               ),
             ),

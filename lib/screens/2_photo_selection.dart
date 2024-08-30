@@ -1,64 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart'; 
+// Remove if not needed
+import 'package:image_picker/image_picker.dart'; // Add this import
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import '../models/types.dart';
 
 class PhotoSelectionScreen extends StatefulWidget {
   const PhotoSelectionScreen({super.key});
 
   @override
   _PhotoSelectionScreenState createState() => _PhotoSelectionScreenState();
-}
-
-class ItemData {
-  final String imageName;
-  final String item;
-  final double price;
-
-  ItemData({
-    required this.imageName,
-    required this.item,
-    required this.price,
-  });
-
-  factory ItemData.fromJson(Map<String, dynamic> json) {
-    return ItemData(
-      imageName: json['image_name'],
-      item: json['item'],
-      price: json['price'].toDouble(),
-    );
-  }
-}
-
-class Response {
-  final List<ItemData> allItems;
-  final List<ItemData> selectedItems;
-  final double sum;
-
-  Response({
-    required this.allItems,
-    required this.selectedItems,
-    required this.sum,
-  });
-
-  factory Response.fromJson(Map<String, dynamic> json) {
-    // {all_items: [{image_name: cloth.jpg, item: pink tank top, price: 20}, {image_name: shoes.jpg, item: pink sneakers, price: 60}], selected_items: [{image_name: cloth.jpg, item: pink tank top, price: 20}, {image_name: shoes.jpg, item: pink sneakers, price: 60}], sum: 80}
-    var all_items = (json['all_items'] as List?)
-            ?.map((i) => ItemData.fromJson(i))
-            .toList() ??
-        [];
-    var selected_items = (json['selected_items'] as List)
-        .map((i) => ItemData.fromJson(i))
-        .toList();
-    var sum = json['sum'];
-
-    return Response(
-      allItems: all_items,
-      selectedItems: selected_items,
-      sum: sum,
-    );
-  }
 }
 
 class _PhotoSelectionScreenState extends State<PhotoSelectionScreen> {
@@ -78,7 +30,7 @@ class _PhotoSelectionScreenState extends State<PhotoSelectionScreen> {
 
   Future<Response> _sendImagesToBackend(
       double moneyAmount, List<XFile> images) async {
-    var uri = Uri.parse('http://localhost:9000/analyze');
+    var uri = Uri.parse('https://mercari-bold-backend.onrender.com/analyze');
     var request = http.MultipartRequest('POST', uri);
     request.fields['budget'] = moneyAmount.toString();
 
@@ -178,33 +130,56 @@ class _PhotoSelectionScreenState extends State<PhotoSelectionScreen> {
                     await _pickImages(); // Allow image selection from gallery
 
                     if (_selectedImages.isNotEmpty) {
+                      Response data;
                       try {
-                        Response data = await _sendImagesToBackend(
-                            _selectedAmount,
-                            _selectedImages); // Send to backend
-
-                        // Print statements...
-
-                        // Navigate to the next screen and pass the money amount and Response data
-                        Navigator.pushNamed(context, '/aiSelection', arguments: {
-                          'money': _selectedAmount.toString(),
-                          'response': data, // Include Response object here
-                        });
-
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Sent the image to the backend')),
-                        );
+                        data = await _sendImagesToBackend(
+                            _selectedAmount, _selectedImages);
                       } catch (e) {
                         print('Error: $e');
+                        throw Exception('Error: $e');
                       }
+                      // すべてのアイテムを表示
+                      print('All Items:');
+                      for (var item in data.allItems) {
+                        print('${item.item}: ${item.price}');
+                      }
+
+                      // 選択されたアイテムを表示
+                      print('Selected Items Index:');
+                      for (var idx in data.selectedIdx) {
+                        print(
+                            '${data.allItems[idx].item}: ${data.allItems[idx].price}');
+                      }
+
+                      // 合計を表示
+                      print('Total Sum: ${data.sum}');
+
+                      // image_pathを追加
+                      for (var idx = 0; idx < data.allItems.length; idx++) {
+                        data.allItems[idx].image = _selectedImages[idx];
+                      }
+
+                      // Navigate to the next screen and pass the money amount
+                      Navigator.pushNamed(context, '/aiSelection', arguments: {
+                        'money': _selectedAmount.toString(),
+                        'data': data,
+                      });
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content: Text('Sent the image to the backend')),
+                      );
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Choose the image you want the AI ​​to classify')),
+                        const SnackBar(
+                            content: Text(
+                                'Choose the image you want the AI ​​to classify')),
                       );
                     }
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Select an amount greater than 0')),
+                      SnackBar(
+                          content: Text('Select an amount greater than 0')),
                     );
                   }
                 },
