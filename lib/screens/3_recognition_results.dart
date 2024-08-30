@@ -60,6 +60,8 @@ class ImageData {
 }
 
 class AISelectionScreen extends StatelessWidget {
+  const AISelectionScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     // Retrieve arguments as a Map
@@ -74,12 +76,12 @@ class AISelectionScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('AI選択画像'),
+        title: const Text('AI選択画像'),
       ),
       body: Stack(
         children: [
           GridView.builder(
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
             ),
             itemCount: images.length,
@@ -105,7 +107,7 @@ class AISelectionScreen extends StatelessWidget {
               onPressed: () {
                 Navigator.pushNamed(context, '/listing', arguments: images[0].imageUrl);
               },
-              child: Text('デバッグ: 出品画面へ'),
+              child: const Text('デバッグ: 出品画面へ'),
             ),
           ),
         ],

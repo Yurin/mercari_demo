@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
-import 'dart:io';
-import 'package:flutter/services.dart'; // Remove if not needed
+// Remove if not needed
 import 'package:image_picker/image_picker.dart'; // Add this import
 import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class PhotoSelectionScreen extends StatefulWidget {
+  const PhotoSelectionScreen({super.key});
+
   @override
   _PhotoSelectionScreenState createState() => _PhotoSelectionScreenState();
 }
+
 class Response {
   final List<ItemData> allItems;
   final List<ItemData> selectedItems;
@@ -66,25 +69,27 @@ class _PhotoSelectionScreenState extends State<PhotoSelectionScreen> {
 
   // Pick images from gallery
   Future<void> _pickImages() async {
-    final ImagePicker _picker = ImagePicker();
-    final List<XFile>? images = await _picker.pickMultiImage();
-    if (images != null && images.isNotEmpty) {
+    final ImagePicker picker = ImagePicker();
+    final List<XFile> images = await picker.pickMultiImage();
+    if (images.isNotEmpty) {
       setState(() {
         _selectedImages = images;
       });
     }
   }
 
-  Future<Response> _sendImagesToBackend(String moneyAmount, List<XFile> images) async {
+  Future<Response> _sendImagesToBackend(
+      String moneyAmount, List<XFile> images) async {
     var url = Uri.parse('https://mercari-bold-backend.onrender.com/analyze');
     var request = http.MultipartRequest('POST', url);
 
     // Add money amount to request
     request.fields['budget'] = moneyAmount;
-    
+
     // Add images to request
     for (var image in images) {
-      request.files.add(await http.MultipartFile.fromPath('images', image.path));
+      request.files
+          .add(await http.MultipartFile.fromPath('images', image.path));
     }
 
     try {
@@ -92,12 +97,14 @@ class _PhotoSelectionScreenState extends State<PhotoSelectionScreen> {
 
       if (response.statusCode == 200) {
         print('Request Succeeded');
-        return Response.fromJson(jsonDecode(response.body));
+        return Response.fromJson(jsonDecode(response.stream.toString()));
       } else {
         print('Failed with status code: ${response.statusCode}');
+        throw Exception('Failed with status code: ${response.statusCode}');
       }
     } catch (e) {
       print('Failed to send the request: $e');
+      throw Exception('Failed to send the request: $e');
     }
   }
 
@@ -106,7 +113,7 @@ class _PhotoSelectionScreenState extends State<PhotoSelectionScreen> {
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
-        title: Text('You want money, right?'),
+        title: const Text('You want money, right?'),
         backgroundColor: Colors.transparent,
         elevation: 0,
         foregroundColor: Colors.black,
@@ -116,39 +123,40 @@ class _PhotoSelectionScreenState extends State<PhotoSelectionScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Text(
               'Question',
               style: TextStyle(fontSize: 16, color: Colors.grey[700]),
             ),
-            SizedBox(height: 8),
-            Text(
+            const SizedBox(height: 8),
+            const Text(
               'Automatically find items to sell',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Text(
               'How much do you want?',
               style: TextStyle(fontSize: 16, color: Colors.grey[600]),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             TextFormField(
               controller: _moneyController,
               keyboardType: TextInputType.number,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Enter the amount in dollars',
                 border: OutlineInputBorder(),
               ),
             ),
-            Spacer(),
+            const Spacer(),
             Center(
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.purple,
+                  backgroundColor: Colors.purple,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(24),
                   ),
-                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
                 ),
                 onPressed: () async {
                   final moneyAmount = _moneyController.text;
@@ -156,10 +164,10 @@ class _PhotoSelectionScreenState extends State<PhotoSelectionScreen> {
                     await _pickImages(); // Allow image selection from gallery
 
                     if (_selectedImages.isNotEmpty) {
-
                       try {
-                        Response data = await _sendImagesToBackend(moneyAmount, _selectedImages); // Send to backend
-                        
+                        Response data = await _sendImagesToBackend(
+                            moneyAmount, _selectedImages); // Send to backend
+
                         // すべてのアイテムを表示
                         print('All Items:');
                         for (var item in data.allItems) {
@@ -174,7 +182,6 @@ class _PhotoSelectionScreenState extends State<PhotoSelectionScreen> {
 
                         // 合計を表示
                         print('Total Sum: ${data.sum}');
-
                       } catch (e) {
                         print('Error: $e');
                       }
@@ -185,20 +192,23 @@ class _PhotoSelectionScreenState extends State<PhotoSelectionScreen> {
                       });
 
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Sent the image to the backend')),
+                        const SnackBar(
+                            content: Text('Sent the image to the backend')),
                       );
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Choose the image you want the AI ​​to classify')),
+                        const SnackBar(
+                            content: Text(
+                                'Choose the image you want the AI ​​to classify')),
                       );
                     }
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Enter your amount')),
+                      const SnackBar(content: Text('Enter your amount')),
                     );
                   }
                 },
-                child: Text(
+                child: const Text(
                   'What images do you want the AI to identify?',
                   style: TextStyle(fontSize: 18, color: Colors.white),
                 ),
@@ -210,4 +220,3 @@ class _PhotoSelectionScreenState extends State<PhotoSelectionScreen> {
     );
   }
 }
-
