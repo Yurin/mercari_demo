@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:share/share.dart'; // Add this import if you're using a package for sharing
+import 'package:share/share.dart'; 
 
 class CompleteScreen extends StatelessWidget {
   const CompleteScreen({super.key});
@@ -18,12 +18,11 @@ class CompleteScreen extends StatelessWidget {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // Navigate to '/photo_selection' for continuous listing
                 Navigator.pushNamed(context, '/photo_selection');
               },
               child: const Text('Continue selling'),
             ),
-            const SizedBox(height: 10), // To add space between the buttons
+            const SizedBox(height: 10), 
             ElevatedButton(
               onPressed: () {
                 // Share functionality
