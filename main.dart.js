@@ -83002,7 +83002,7 @@ $0(){},
 $S:0}
 A.qW.prototype={
 K(a){var s=null,r=t.a.a(A.xv(a,t.X).b.b),q=J.av(r),p=q.h(r,"item"),o=q.h(r,"imagePath"),n=q.h(r,"description")
-return A.Kq(A.Fj(s,s,s,A.ej(n,s,s,s,s,s,s)),s,new A.cR(B.j5,A.nu(A.b([A.asK(o,B.ck,250,1/0),B.hL,A.ej("Description: "+n,s,s,s,B.yu,s,s),B.hL,A.ej("item: "+p.k(0),s,s,s,B.yu,s,s),B.y6,B.Ng,B.hL,A.qs(B.RM,new A.a31(a),s)],t.E),B.bY,B.b5,B.bJ),s),s)}}
+return A.Kq(A.Fj(s,s,s,A.ej(n,s,s,s,s,s,s)),s,new A.cR(B.j5,A.nu(A.b([A.asK(o,B.ck,250,1/0),B.hL,A.ej("item: "+n,s,s,s,B.yu,s,s),B.hL,A.ej("Category: "+p.k(0),s,s,s,B.yu,s,s),B.y6,B.Ng,B.hL,A.qs(B.RM,new A.a31(a),s)],t.E),B.bY,B.b5,B.bJ),s),s)}}
 A.a31.prototype={
 $0(){A.m3(this.a).pO("/listingComplete",null,t.X)},
 $S:0}
