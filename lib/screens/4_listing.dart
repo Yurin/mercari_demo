@@ -32,23 +32,18 @@ class ListingScreen extends StatelessWidget {
             const SizedBox(height: 16.0),
             // Display the description passed from the previous screen
             Text(
-              'Description: $description',
+              'item: $description',
               style: const TextStyle(fontSize: 16.0),
             ),
             const SizedBox(height: 16.0),
             Text(
-              'item: $item',
+              'Category: $item',//カテゴリーの値をひっぱってくる！！！！！！！！！！！！！
               style: const TextStyle(fontSize: 16.0),
             ),
-            // TextFields for user input
-
-            // const TextField(
-            //   decoration: InputDecoration(labelText: 'item name'),             
-            // ),
 
             const SizedBox(height: 8.0),
             const TextField(
-              decoration: InputDecoration(labelText: 'price'),
+              decoration: InputDecoration(labelText: 'price'),//プライスの値をひっぱってくる！！！！！！！！！！！！！
               keyboardType: TextInputType.number,
             ),
             const SizedBox(height: 16.0),
