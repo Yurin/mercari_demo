@@ -8,6 +8,51 @@ class PhotoSelectionScreen extends StatefulWidget {
   @override
   _PhotoSelectionScreenState createState() => _PhotoSelectionScreenState();
 }
+class Response {
+  final List<ItemData> allItems;
+  final List<ItemData> selectedItems;
+  final double sum;
+
+  Response({
+    required this.allItems,
+    required this.selectedItems,
+    required this.sum,
+  });
+
+  factory Response.fromJson(Map<String, dynamic> json) {
+    return Response(
+      allItems: (json['all_items'] as List)
+          .map((item) => ItemData.fromJson(item))
+          .toList(),
+      selectedItems: (json['selected_items'] as List)
+          .map((item) => ItemData.fromJson(item))
+          .toList(),
+      sum: json['sum'].toDouble(),
+    );
+  }
+}
+
+class ItemData {
+  // ItemDataのプロパティを定義
+  // 例：
+  final String id;
+  final String name;
+  final double price;
+
+  ItemData({
+    required this.id,
+    required this.name,
+    required this.price,
+  });
+
+  factory ItemData.fromJson(Map<String, dynamic> json) {
+    return ItemData(
+      id: json['id'],
+      name: json['name'],
+      price: json['price'].toDouble(),
+    );
+  }
+}
 
 class _PhotoSelectionScreenState extends State<PhotoSelectionScreen> {
   final TextEditingController _moneyController = TextEditingController();
@@ -30,7 +75,7 @@ class _PhotoSelectionScreenState extends State<PhotoSelectionScreen> {
     }
   }
 
-  Future<void> _sendImagesToBackend(String moneyAmount, List<XFile> images) async {
+  Future<Response> _sendImagesToBackend(String moneyAmount, List<XFile> images) async {
     var url = Uri.parse('https://mercari-bold-backend.onrender.com/analyze');
     var request = http.MultipartRequest('POST', url);
 
@@ -47,12 +92,7 @@ class _PhotoSelectionScreenState extends State<PhotoSelectionScreen> {
 
       if (response.statusCode == 200) {
         print('Request Succeeded');
-        // レスポンスの処理
-        var responseData = await response.stream.bytesToString();
-        print(responseData);
-        // parse the response json
-        var data = jsonDecode(responseData);
-        print(data);
+        return Response.fromJson(jsonDecode(response.body));
       } else {
         print('Failed with status code: ${response.statusCode}');
       }
@@ -116,7 +156,28 @@ class _PhotoSelectionScreenState extends State<PhotoSelectionScreen> {
                     await _pickImages(); // Allow image selection from gallery
 
                     if (_selectedImages.isNotEmpty) {
-                      await _sendImagesToBackend(moneyAmount, _selectedImages); // Send to backend
+
+                      try {
+                        Response data = await _sendImagesToBackend(moneyAmount, _selectedImages); // Send to backend
+                        
+                        // すべてのアイテムを表示
+                        print('All Items:');
+                        for (var item in data.allItems) {
+                          print('${item.name}: ${item.price}');
+                        }
+
+                        // 選択されたアイテムを表示
+                        print('Selected Items:');
+                        for (var item in data.selectedItems) {
+                          print('${item.name}: ${item.price}');
+                        }
+
+                        // 合計を表示
+                        print('Total Sum: ${data.sum}');
+
+                      } catch (e) {
+                        print('Error: $e');
+                      }
 
                       // Navigate to the next screen and pass the money amount
                       Navigator.pushNamed(context, '/aiSelection', arguments: {
