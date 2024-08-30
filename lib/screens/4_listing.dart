@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:image_picker/image_picker.dart';
 import '../models/types.dart'; // Ensure this contains your ItemData class
 
 class ListingScreen extends StatelessWidget {
@@ -37,14 +41,14 @@ class ListingScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16.0),
             Text(
-              'Category: $item',//カテゴリーの値をひっぱってくる！！！！！！！！！！！！！
+              'Category: ${item.category}',
               style: const TextStyle(fontSize: 16.0),
             ),
-
             const SizedBox(height: 8.0),
-            const TextField(
-              decoration: InputDecoration(labelText: 'price'),//プライスの値をひっぱってくる！！！！！！！！！！！！！
+            TextField(
+              decoration: const InputDecoration(labelText: 'price'),
               keyboardType: TextInputType.number,
+              controller: TextEditingController(text: item.price.toString()),
             ),
             const SizedBox(height: 16.0),
             // Button to submit the listing
@@ -61,4 +65,3 @@ class ListingScreen extends StatelessWidget {
     );
   }
 }
-
