@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:flutter/services.dart'; // Remove if not needed
 import 'package:image_picker/image_picker.dart'; // Add this import
+import 'package:http/http.dart' as http;
 
 class PhotoSelectionScreen extends StatefulWidget {
   @override
@@ -29,18 +30,35 @@ class _PhotoSelectionScreenState extends State<PhotoSelectionScreen> {
     }
   }
 
-  void _sendImagesToBackend(String moneyAmount, List<XFile> images) {
-    // Implement your backend communication here using packages like `http` or `dio`
-    // Simulate sending images and receiving URLs
-    for (var image in images) {
-      // Simulate URL generation from backend
-      final imageUrl = 'https://yourbackend.com/uploads/${image.name}';
+  Future<void> _sendImagesToBackend(String moneyAmount, List<XFile> images) async {
+    var url = Uri.parse('https://mercari-bold-backend.onrender.com/analyze');
+    var request = http.MultipartRequest('POST', url);
 
-      // Print the URL + SUCCESS!!! to the terminal
-      print('$imageUrl SUCCESS!!!');
-    }
-    // Implement actual backend communication here using 'http' or 'dio' packages
+    // Add money amount to request
+    request.fields['budget'] = moneyAmount;
     
+    // Add images to request
+    for (var image in images) {
+      request.files.add(await http.MultipartFile.fromPath('images', image.path));
+    }
+
+    try {
+      var response = await request.send();
+
+      if (response.statusCode == 200) {
+        print('Request Succeeded');
+        // レスポンスの処理
+        var responseData = await response.stream.bytesToString();
+        print(responseData);
+        // parse the response json
+        var data = jsonDecode(responseData);
+        print(data);
+      } else {
+        print('Failed with status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Failed to send the request: $e');
+    }
   }
 
   @override
@@ -98,7 +116,7 @@ class _PhotoSelectionScreenState extends State<PhotoSelectionScreen> {
                     await _pickImages(); // Allow image selection from gallery
 
                     if (_selectedImages.isNotEmpty) {
-                      _sendImagesToBackend(moneyAmount, _selectedImages); // Send to backend
+                      await _sendImagesToBackend(moneyAmount, _selectedImages); // Send to backend
 
                       // Navigate to the next screen and pass the money amount
                       Navigator.pushNamed(context, '/aiSelection', arguments: {
