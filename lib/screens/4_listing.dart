@@ -1,39 +1,3 @@
-// import 'package:flutter/material.dart';
-
-// class ListingScreen extends StatelessWidget {
-//   const ListingScreen({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     final selectedImage = ModalRoute.of(context)!.settings.arguments as String;
-
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text('出品画面'),
-//       ),
-//       body: Column(
-//         children: [
-//           Image.network(selectedImage),
-//           const TextField(
-//             decoration: InputDecoration(labelText: '商品名'),
-//           ),
-//           const TextField(
-//             decoration: InputDecoration(labelText: '価格'),
-//             keyboardType: TextInputType.number,
-//           ),
-//           ElevatedButton(
-//             onPressed: () {
-//               // 実際の出品処理が追加される場所
-//               Navigator.pushNamed(context, '/listingComplete');
-//             },
-//             child: const Text('出品する'),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
-
 import 'package:flutter/material.dart';
 import '../models/types.dart'; // Ensure this contains your ItemData class
 
@@ -72,13 +36,19 @@ class ListingScreen extends StatelessWidget {
               style: const TextStyle(fontSize: 16.0),
             ),
             const SizedBox(height: 16.0),
-            // TextFields for user input
-            const TextField(
-              decoration: InputDecoration(labelText: '商品名'),
+            Text(
+              'item: $item',
+              style: const TextStyle(fontSize: 16.0),
             ),
+            // TextFields for user input
+
+            // const TextField(
+            //   decoration: InputDecoration(labelText: 'item name'),             
+            // ),
+
             const SizedBox(height: 8.0),
             const TextField(
-              decoration: InputDecoration(labelText: '価格'),
+              decoration: InputDecoration(labelText: 'price'),
               keyboardType: TextInputType.number,
             ),
             const SizedBox(height: 16.0),
@@ -88,7 +58,7 @@ class ListingScreen extends StatelessWidget {
                 // Placeholder for the listing process
                 Navigator.pushNamed(context, '/listingComplete');
               },
-              child: const Text('出品する'),
+              child: const Text('Sell'),
             ),
           ],
         ),

@@ -18,7 +18,7 @@ class CompleteScreen extends StatelessWidget {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/photo_selection');
+                Navigator.pushNamed(context, '/listing');
               },
               child: const Text('Continue selling'),
             ),
