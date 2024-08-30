@@ -57,3 +57,24 @@ class Response {
     );
   }
 }
+
+class DetailsData {
+  final String name;
+  final String details;
+  final List<String> keywords;
+
+  DetailsData({
+    required this.name,
+    required this.details,
+    required this.keywords,
+  });
+
+  factory DetailsData.fromJson(Map<String, dynamic> json) {
+    return DetailsData(
+      name: json['name'],
+      details: json['details'],
+      keywords:
+          (json['keywords'] as List?)?.map((i) => i as String).toList() ?? [],
+    );
+  }
+}
