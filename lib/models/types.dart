@@ -5,6 +5,7 @@ class ItemData {
   final String item;
   final double price;
   final int idx;
+  final String category;
   late XFile? image;
 
   ItemData({
@@ -12,6 +13,7 @@ class ItemData {
     required this.idx,
     required this.item,
     required this.price,
+    required this.category,
     required this.image,
   });
 
@@ -21,6 +23,7 @@ class ItemData {
       item: json['item'],
       price: json['price'].toDouble(),
       idx: json['idx'].toInt(),
+      category: json['category_name'],
       image: null,
     );
   }
