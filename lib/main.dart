@@ -7,10 +7,12 @@ import 'screens/5_finish.dart';
 
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -19,29 +21,31 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => SellTabScreen(),
-        '/photo_selection': (context) => PhotoSelectionScreen(), 
-        '/aiSelection': (context) => AISelectionScreen(),
-        '/listing': (context) => ListingScreen(),
-        '/listingComplete': (context) => CompleteScreen(),
+        '/': (context) =>  SellTabScreen(),
+        '/photo_selection': (context) => const PhotoSelectionScreen(), 
+        '/aiSelection': (context) => const AISelectionScreen(),
+        '/listing': (context) =>  ListingScreen(),
+        '/listingComplete': (context) =>  CompleteScreen(),
       },
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
+
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
-  static List<Widget> _widgetOptions = <Widget>[
-    Text('Home Page'),
-    Text('Favorites'),
-    SellTabScreen(), // `sell_tab.dart`を呼び出します
-    Text('Inbox'),
-    Text('Profile'),
+  static final List<Widget> _widgetOptions = <Widget>[
+    const Text('Home Page'),
+    const Text('Favorites'),
+    SellTabScreen(),
+    const Text('Inbox'),
+    const Text('Profile'),
   ];
 
   void _onItemTapped(int index) {
