@@ -50,14 +50,7 @@
 // }
 
 import 'package:flutter/material.dart';
-
-class ImageData {
-  final String imageUrl;
-  final String item;
-  final int price;
-
-  ImageData({required this.imageUrl, required this.item, required this.price});
-}
+import '../models/types.dart';
 
 class AISelectionScreen extends StatelessWidget {
   const AISelectionScreen({super.key});
@@ -65,14 +58,11 @@ class AISelectionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Retrieve arguments as a Map
-    final Map<String, String> selectedCategories =
-        ModalRoute.of(context)!.settings.arguments as Map<String, String>;
-
-    // Example list of images with additional information
-    final List<ImageData> images = [
-      ImageData(imageUrl: 'https://via.placeholder.com/150', item: 'Jacket', price: 100),
-      ImageData(imageUrl: 'https://via.placeholder.com/150', item: 'Shirt', price: 50),
-    ];
+    final Map<String, dynamic> args =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    final String money = args['money'];
+    final Response itemDataList = args['data'];
+    var images = itemDataList.allItems;
 
     return Scaffold(
       appBar: AppBar(
@@ -84,16 +74,16 @@ class AISelectionScreen extends StatelessWidget {
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
             ),
-            itemCount: images.length,
+            itemCount: itemDataList.allItems.length,
             itemBuilder: (context, index) {
               return GestureDetector(
                 onTap: () {
                   Navigator.pushNamed(context, '/listing',
-                      arguments: images[index].imageUrl);
+                      arguments: images[index].image?.path);
                 },
                 child: Column(
                   children: [
-                    Image.network(images[index].imageUrl),
+                    Image.network(images[index].image?.path ?? ''),
                     Text(images[index].item),
                     Text('\$${images[index].price}'),
                   ],
@@ -105,7 +95,8 @@ class AISelectionScreen extends StatelessWidget {
             alignment: Alignment.bottomRight,
             child: ElevatedButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/listing', arguments: images[0].imageUrl);
+                Navigator.pushNamed(context, '/listing',
+                    arguments: images[0].image?.path);
               },
               child: const Text('デバッグ: 出品画面へ'),
             ),
