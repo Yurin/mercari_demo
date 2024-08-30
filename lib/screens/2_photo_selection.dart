@@ -1,16 +1,35 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 // Remove if not needed
 import 'package:image_picker/image_picker.dart'; // Add this import
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class PhotoSelectionScreen extends StatefulWidget {
   const PhotoSelectionScreen({super.key});
 
   @override
   _PhotoSelectionScreenState createState() => _PhotoSelectionScreenState();
+}
+
+class ItemData {
+  final String imageName;
+  final String item;
+  final double price;
+
+  ItemData({
+    required this.imageName,
+    required this.item,
+    required this.price,
+  });
+
+  factory ItemData.fromJson(Map<String, dynamic> json) {
+    return ItemData(
+      imageName: json['image_name'],
+      item: json['item'],
+      price: json['price'].toDouble(),
+    );
+  }
 }
 
 class Response {
@@ -25,36 +44,20 @@ class Response {
   });
 
   factory Response.fromJson(Map<String, dynamic> json) {
+    // {all_items: [{image_name: cloth.jpg, item: pink tank top, price: 20}, {image_name: shoes.jpg, item: pink sneakers, price: 60}], selected_items: [{image_name: cloth.jpg, item: pink tank top, price: 20}, {image_name: shoes.jpg, item: pink sneakers, price: 60}], sum: 80}
+    var all_items = (json['all_items'] as List?)
+            ?.map((i) => ItemData.fromJson(i))
+            .toList() ??
+        [];
+    var selected_items = (json['selected_items'] as List)
+        .map((i) => ItemData.fromJson(i))
+        .toList();
+    var sum = json['sum'];
+
     return Response(
-      allItems: (json['all_items'] as List)
-          .map((item) => ItemData.fromJson(item))
-          .toList(),
-      selectedItems: (json['selected_items'] as List)
-          .map((item) => ItemData.fromJson(item))
-          .toList(),
-      sum: json['sum'].toDouble(),
-    );
-  }
-}
-
-class ItemData {
-  // ItemDataのプロパティを定義
-  // 例：
-  final String id;
-  final String name;
-  final double price;
-
-  ItemData({
-    required this.id,
-    required this.name,
-    required this.price,
-  });
-
-  factory ItemData.fromJson(Map<String, dynamic> json) {
-    return ItemData(
-      id: json['id'],
-      name: json['name'],
-      price: json['price'].toDouble(),
+      allItems: all_items,
+      selectedItems: selected_items,
+      sum: sum,
     );
   }
 }
@@ -75,32 +78,37 @@ class _PhotoSelectionScreenState extends State<PhotoSelectionScreen> {
   }
 
   Future<Response> _sendImagesToBackend(
-        double moneyAmount, List<XFile> images) async {
-    var url = Uri.parse('https://mercari-bold-backend.onrender.com/analyze');
-    var request = http.MultipartRequest('POST', url);
-
-    // Add money amount to request
+      double moneyAmount, List<XFile> images) async {
+    var uri = Uri.parse('http://localhost:9000/analyze');
+    var request = http.MultipartRequest('POST', uri);
     request.fields['budget'] = moneyAmount.toString();
 
-    // Add images to request
     for (var image in images) {
-      request.files
-          .add(await http.MultipartFile.fromPath('images', image.path));
+      if (kIsWeb) {
+        var bytes = await image.readAsBytes();
+        request.files.add(http.MultipartFile.fromBytes('images', bytes,
+            filename: image.name));
+      } else {
+        request.files
+            .add(await http.MultipartFile.fromPath('images', image.path));
+      }
     }
 
+    http.StreamedResponse response;
     try {
-      var response = await request.send();
-
-      if (response.statusCode == 200) {
-        print('Request Succeeded');
-        return Response.fromJson(jsonDecode(response.stream.toString()));
-      } else {
-        print('Failed with status code: ${response.statusCode}');
-        throw Exception('Failed with status code: ${response.statusCode}');
-      }
+      response = await request.send();
     } catch (e) {
       print('Failed to send the request: $e');
       throw Exception('Failed to send the request: $e');
+    }
+
+    if (response.statusCode == 200) {
+      print('Request Succeeded');
+      return Response.fromJson(
+          jsonDecode(await response.stream.bytesToString()));
+    } else {
+      print('Failed with status code: ${response.statusCode}');
+      throw Exception('Failed with status code: ${response.statusCode}');
     }
   }
 
@@ -179,13 +187,13 @@ class _PhotoSelectionScreenState extends State<PhotoSelectionScreen> {
                         // すべてのアイテムを表示
                         print('All Items:');
                         for (var item in data.allItems) {
-                          print('${item.name}: ${item.price}');
+                          print('${item.item}: ${item.price}');
                         }
 
                         // 選択されたアイテムを表示
                         print('Selected Items:');
                         for (var item in data.selectedItems) {
-                          print('${item.name}: ${item.price}');
+                          print('${item.item}: ${item.price}');
                         }
 
                         // 合計を表示
