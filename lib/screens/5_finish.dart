@@ -18,7 +18,7 @@ class CompleteScreen extends StatelessWidget {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/listing');
+                Navigator.popUntil(context, ModalRoute.withName('/aiSelection'));
               },
               child: const Text('Continue selling'),
             ),
@@ -33,7 +33,6 @@ class CompleteScreen extends StatelessWidget {
             const SizedBox(height: 10),
             ElevatedButton(
               onPressed: () {
-                // Return to 'Sell' tab
                 Navigator.popUntil(context, ModalRoute.withName('/'));
               },
               child: const Text('Return to the Seller Pages'),
