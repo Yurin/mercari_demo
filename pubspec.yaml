@@ -1,12 +1,12 @@
 name: mercari_demo
 description: A new Flutter project.
 
-publish_to: 'none' 
+publish_to: "none"
 
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.1.0 <4.0.0'
+  sdk: ">=3.1.0 <4.0.0"
 
 dependencies:
   flutter:
@@ -16,12 +16,12 @@ dependencies:
   cupertino_icons: ^1.0.2
   image_picker: ^1.0.8
   flutterflow_ui: ^0.2.0+1
-  photo_manager: ^2.5.0 
+  photo_manager: ^2.5.0
   permission_handler: ^10.0.0
-  path_provider: ^2.0.15 
+  path_provider: ^2.0.15
 
   http: any
-  share: any
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
