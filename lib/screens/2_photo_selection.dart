@@ -16,6 +16,7 @@ class PhotoSelectionScreen extends StatefulWidget {
 class _PhotoSelectionScreenState extends State<PhotoSelectionScreen> {
   List<XFile> _selectedImages = []; // Use XFile from image_picker
   double _selectedAmount = 0; // New variable to hold the slider value
+  bool _isLoading = false;
 
   // Pick images from gallery
   Future<void> _pickImages() async {
@@ -66,132 +67,151 @@ class _PhotoSelectionScreenState extends State<PhotoSelectionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
-      appBar: AppBar(
-        title: const Text('You want money, right?'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        foregroundColor: Colors.black,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 20),
-            Text(
-              'Question',
-              style: TextStyle(fontSize: 16, color: Colors.grey[700]),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Automatically find items to sell',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'How much do you want?',
-              style: TextStyle(fontSize: 16, color: Colors.grey[600]),
-            ),
-            SizedBox(height: 20),
-            Column(
+        backgroundColor: Colors.grey[100],
+        appBar: AppBar(
+          title: const Text('You want money, right?'),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          foregroundColor: Colors.black,
+        ),
+        body: Stack(children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Slider(
-                  value: _selectedAmount,
-                  min: 0,
-                  max: 100,
-                  divisions: 10,
-                  label: _selectedAmount.toStringAsFixed(0),
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedAmount = value;
-                    });
-                  },
-                ),
+                const SizedBox(height: 20),
                 Text(
-                  'Selected Amount: \$${_selectedAmount.toStringAsFixed(0)}',
+                  'Question',
+                  style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Automatically find items to sell',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'How much do you want?',
                   style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                 ),
+                SizedBox(height: 20),
+                Column(
+                  children: [
+                    Slider(
+                      value: _selectedAmount,
+                      min: 0,
+                      max: 100,
+                      divisions: 10,
+                      label: _selectedAmount.toStringAsFixed(0),
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedAmount = value;
+                        });
+                      },
+                    ),
+                    Text(
+                      'Selected Amount: \$${_selectedAmount.toStringAsFixed(0)}',
+                      style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                    ),
+                  ],
+                ),
+                const Spacer(),
+                Center(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.purple,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 40, vertical: 16),
+                    ),
+                    onPressed: () async {
+                      if (_selectedAmount > 0) {
+                        await _pickImages(); // Allow image selection from gallery
+
+                        setState(() {
+                          _isLoading = true; // ローディング状態を開始
+                        });
+
+                        if (_selectedImages.isNotEmpty) {
+                          Response data;
+                          try {
+                            data = await _sendImagesToBackend(
+                                _selectedAmount, _selectedImages);
+                          } catch (e) {
+                            print('Error: $e');
+                            throw Exception('Error: $e');
+                          }
+
+                          setState(() {
+                            _isLoading = false; // ローディング状態を終了
+                          });
+
+                          // すべてのアイテムを表示
+                          print('All Items:');
+                          for (var item in data.allItems) {
+                            print('${item.item}: ${item.price}');
+                          }
+
+                          // 選択されたアイテムを表示
+                          print('Selected Items Index:');
+                          for (var idx in data.selectedIdx) {
+                            print(
+                                '${data.allItems[idx].item}: ${data.allItems[idx].price}');
+                          }
+
+                          // 合計を表示
+                          print('Total Sum: ${data.sum}');
+
+                          // image_pathを追加
+                          for (var idx = 0; idx < data.allItems.length; idx++) {
+                            data.allItems[idx].image = _selectedImages[idx];
+                          }
+
+                          // Navigate to the next screen and pass the money amount
+                          Navigator.pushNamed(context, '/aiSelection',
+                              arguments: {
+                                'money': _selectedAmount.toString(),
+                                'data': data,
+                              });
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text('Sent the image to the backend')),
+                          );
+                        } else {
+                          setState(() {
+                            _isLoading = false; // ローディング状態を終了
+                          });
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text(
+                                    'Choose the image you want the AI ​​to classify')),
+                          );
+                        }
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text('Select an amount greater than 0')),
+                        );
+                      }
+                    },
+                    child: const Text(
+                      'What images do you want the AI to identify?',
+                      style: TextStyle(fontSize: 18, color: Colors.white),
+                    ),
+                  ),
+                ),
+                if (_isLoading)
+                  const Center(
+                    child: CircularProgressIndicator(), // ローディングインジケーター
+                  ),
               ],
             ),
-            const Spacer(),
-            Center(
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.purple,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(24),
-                  ),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
-                ),
-                onPressed: () async {
-                  if (_selectedAmount > 0) {
-                    await _pickImages(); // Allow image selection from gallery
-
-                    if (_selectedImages.isNotEmpty) {
-                      Response data;
-                      try {
-                        data = await _sendImagesToBackend(
-                            _selectedAmount, _selectedImages);
-                      } catch (e) {
-                        print('Error: $e');
-                        throw Exception('Error: $e');
-                      }
-                      // すべてのアイテムを表示
-                      print('All Items:');
-                      for (var item in data.allItems) {
-                        print('${item.item}: ${item.price}');
-                      }
-
-                      // 選択されたアイテムを表示
-                      print('Selected Items Index:');
-                      for (var idx in data.selectedIdx) {
-                        print(
-                            '${data.allItems[idx].item}: ${data.allItems[idx].price}');
-                      }
-
-                      // 合計を表示
-                      print('Total Sum: ${data.sum}');
-
-                      // image_pathを追加
-                      for (var idx = 0; idx < data.allItems.length; idx++) {
-                        data.allItems[idx].image = _selectedImages[idx];
-                      }
-
-                      // Navigate to the next screen and pass the money amount
-                      Navigator.pushNamed(context, '/aiSelection', arguments: {
-                        'money': _selectedAmount.toString(),
-                        'data': data,
-                      });
-
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                            content: Text('Sent the image to the backend')),
-                      );
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                            content: Text(
-                                'Choose the image you want the AI ​​to classify')),
-                      );
-                    }
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                          content: Text('Select an amount greater than 0')),
-                    );
-                  }
-                },
-                child: const Text(
-                  'What images do you want the AI to identify?',
-                  style: TextStyle(fontSize: 18, color: Colors.white),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+          ),
+        ]));
   }
 }
