@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import '../models/types.dart';
 
 // Screen that displays a list of items passed from the previous page
@@ -12,7 +13,10 @@ class AISelectionScreen extends StatelessWidget {
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
     final String money = args['money'];
     final Response itemDataList = args['data'];
-    var images = itemDataList.allItems;
+    List<ItemData> images = [];
+    for (var idx in itemDataList.selectedIdx) {
+      images.add(itemDataList.allItems[idx]);
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -27,7 +31,7 @@ class AISelectionScreen extends StatelessWidget {
             margin: const EdgeInsets.symmetric(vertical: 8.0),
             child: ListTile(
               leading: Image.network(
-                item.imageName,
+                item.image!.path,
                 width: 50,
                 height: 50,
                 fit: BoxFit.cover,
