@@ -6,7 +6,7 @@ class SellTabScreen extends StatefulWidget {
 }
 
 class _SellTabScreenState extends State<SellTabScreen> {
-  int _selectedIndex = 2; // Default to "Sell" tab
+  int _selectedIndex = 2;  // Default to "Sell" tab
 
   static List<Widget> _widgetOptions = <Widget>[
     Text('Home Page'),
@@ -17,7 +17,7 @@ class _SellTabScreenState extends State<SellTabScreen> {
   ];
 
   void _onItemTapped(int index) {
-    if (index == 2) { // Only allow changes if the "Sell" tab is selected
+    if (index == 2) {  // Only allow changes if the "Sell" tab is selected
       setState(() {
         _selectedIndex = index;
       });
@@ -27,46 +27,27 @@ class _SellTabScreenState extends State<SellTabScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Sell')),
+      appBar: AppBar(title: Text('Seller Page')),
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/back.PNG'), // Path to your background image asset
-            fit: BoxFit.cover, // Fitting the image to cover entire background
+            image: AssetImage('assets/back.jpg'),  // Path to your background image asset
+            fit: BoxFit.cover,  // Fitting the image to cover entire background
           ),
         ),
         child: Column(
           children: [
-            // Top banner section
-            Container(
-              color: Colors.lightBlueAccent.withOpacity(0.8), // Make it slightly transparent
-              padding: EdgeInsets.all(16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Goodbye selling fees.\nOnly @ Mercari.',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                  Image.asset(
-                    'assets/shoes.jpg', // Your asset image
-                    width: 50,
-                    height: 50,
-                  ),
-                ],
-              ),
-            ),
             Expanded(
-              child: Center(
+              child: Align(
+                alignment: Alignment(0.0, -0.0),  // Shift button up slightly
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.pushNamed(context, '/photo_selection');
                   },
                   child: Text('Help me find items to sell'),
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: Size(200, 60),  // Set minimum button size
+                  ),
                 ),
               ),
             ),
@@ -103,4 +84,3 @@ class _SellTabScreenState extends State<SellTabScreen> {
     );
   }
 }
-

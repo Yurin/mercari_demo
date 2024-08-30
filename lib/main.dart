@@ -14,6 +14,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+        primarySwatch: Colors.deepPurple, // ここで色を変更する
+      ),
       initialRoute: '/',
       routes: {
         '/': (context) => SellTabScreen(),
@@ -77,7 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.blue,
+        selectedItemColor: Colors.purple,
         onTap: _onItemTapped,
       ),
     );

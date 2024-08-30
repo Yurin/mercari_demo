@@ -6,20 +6,20 @@ class CompleteScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('出品完了'),
+        title: Text('Listing completed'),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('出品が完了しました！'),
+            Text('The listing is complete!'),
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 // Navigate to '/photo_selection' for continuous listing
                 Navigator.pushNamed(context, '/photo_selection');
               },
-              child: Text('続けて出品する'),
+              child: Text('Continue selling'),
             ),
             SizedBox(height: 10), // To add space between the buttons
             ElevatedButton(
@@ -27,7 +27,7 @@ class CompleteScreen extends StatelessWidget {
                 // Share functionality
                 Share.share('Check out my listing!');
               },
-              child: Text('シェアする'),
+              child: Text('Share'),
             ),
             SizedBox(height: 10),
             ElevatedButton(
@@ -35,7 +35,7 @@ class CompleteScreen extends StatelessWidget {
                 // Return to 'Sell' tab
                 Navigator.popUntil(context, ModalRoute.withName('/'));
               },
-              child: Text('Sellタブに戻る'),
+              child: Text('Return to the Seller Pages'),
             ),
           ],
         ),
