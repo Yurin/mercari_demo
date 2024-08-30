@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:share/share.dart'; // Add this import if you're using a package for sharing
 
 class CompleteScreen extends StatelessWidget {
   @override
@@ -15,7 +16,23 @@ class CompleteScreen extends StatelessWidget {
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // Sellタブ画面に戻る
+                // Navigate to '/photo_selection' for continuous listing
+                Navigator.pushNamed(context, '/photo_selection');
+              },
+              child: Text('続けて出品する'),
+            ),
+            SizedBox(height: 10), // To add space between the buttons
+            ElevatedButton(
+              onPressed: () {
+                // Share functionality
+                Share.share('Check out my listing!');
+              },
+              child: Text('シェアする'),
+            ),
+            SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () {
+                // Return to 'Sell' tab
                 Navigator.popUntil(context, ModalRoute.withName('/'));
               },
               child: Text('Sellタブに戻る'),
