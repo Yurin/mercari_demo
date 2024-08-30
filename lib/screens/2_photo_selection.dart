@@ -58,14 +58,8 @@ class ItemData {
 }
 
 class _PhotoSelectionScreenState extends State<PhotoSelectionScreen> {
-  final TextEditingController _moneyController = TextEditingController();
   List<XFile> _selectedImages = []; // Use XFile from image_picker
-
-  @override
-  void dispose() {
-    _moneyController.dispose();
-    super.dispose();
-  }
+  double _selectedAmount = 0; // New variable to hold the slider value
 
   // Pick images from gallery
   Future<void> _pickImages() async {
@@ -138,14 +132,26 @@ class _PhotoSelectionScreenState extends State<PhotoSelectionScreen> {
               'How much do you want?',
               style: TextStyle(fontSize: 16, color: Colors.grey[600]),
             ),
-            const SizedBox(height: 20),
-            TextFormField(
-              controller: _moneyController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Enter the amount in dollars',
-                border: OutlineInputBorder(),
-              ),
+            SizedBox(height: 20),
+            Column(
+              children: [
+                Slider(
+                  value: _selectedAmount,
+                  min: 0,
+                  max: 100,
+                  divisions: 10,
+                  label: _selectedAmount.toStringAsFixed(0),
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedAmount = value;
+                    });
+                  },
+                ),
+                Text(
+                  'Selected Amount: \$${_selectedAmount.toStringAsFixed(0)}',
+                  style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                ),
+              ],
             ),
             const Spacer(),
             Center(
@@ -159,8 +165,7 @@ class _PhotoSelectionScreenState extends State<PhotoSelectionScreen> {
                       const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
                 ),
                 onPressed: () async {
-                  final moneyAmount = _moneyController.text;
-                  if (moneyAmount.isNotEmpty) {
+                  if (_selectedAmount > 0) {
                     await _pickImages(); // Allow image selection from gallery
 
                     if (_selectedImages.isNotEmpty) {
@@ -188,7 +193,7 @@ class _PhotoSelectionScreenState extends State<PhotoSelectionScreen> {
 
                       // Navigate to the next screen and pass the money amount
                       Navigator.pushNamed(context, '/aiSelection', arguments: {
-                        'money': moneyAmount,
+                        'money': _selectedAmount.toString(),
                       });
 
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -204,7 +209,7 @@ class _PhotoSelectionScreenState extends State<PhotoSelectionScreen> {
                     }
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Enter your amount')),
+                      SnackBar(content: Text('Select an amount greater than 0')),
                     );
                   }
                 },
