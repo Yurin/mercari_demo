@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 // Remove if not needed
 import 'package:image_picker/image_picker.dart'; // Add this import
@@ -73,12 +75,12 @@ class _PhotoSelectionScreenState extends State<PhotoSelectionScreen> {
   }
 
   Future<Response> _sendImagesToBackend(
-      String moneyAmount, List<XFile> images) async {
+        double moneyAmount, List<XFile> images) async {
     var url = Uri.parse('https://mercari-bold-backend.onrender.com/analyze');
     var request = http.MultipartRequest('POST', url);
 
     // Add money amount to request
-    request.fields['budget'] = moneyAmount;
+    request.fields['budget'] = moneyAmount.toString();
 
     // Add images to request
     for (var image in images) {
@@ -171,7 +173,8 @@ class _PhotoSelectionScreenState extends State<PhotoSelectionScreen> {
                     if (_selectedImages.isNotEmpty) {
                       try {
                         Response data = await _sendImagesToBackend(
-                            moneyAmount, _selectedImages); // Send to backend
+                            _selectedAmount,
+                            _selectedImages); // Send to backend
 
                         // すべてのアイテムを表示
                         print('All Items:');
@@ -209,7 +212,8 @@ class _PhotoSelectionScreenState extends State<PhotoSelectionScreen> {
                     }
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Select an amount greater than 0')),
+                      SnackBar(
+                          content: Text('Select an amount greater than 0')),
                     );
                   }
                 },
