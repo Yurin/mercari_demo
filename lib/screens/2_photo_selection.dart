@@ -101,7 +101,7 @@ class _PhotoSelectionScreenState extends State<PhotoSelectionScreen> {
                     Slider(
                       value: _selectedAmount,
                       min: 0,
-                      max: 100,
+                      max: 200,
                       divisions: 10,
                       label: _selectedAmount.toStringAsFixed(0),
                       onChanged: (value) {

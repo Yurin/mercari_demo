@@ -75,9 +75,14 @@ class AISelectionScreen extends StatelessWidget {
     final Response itemDataList = args['data'];
 
     // Prepare a list of selected images
-    List<ItemData> images = [];
-    for (var idx in itemDataList.selectedIdx) {
-      images.add(itemDataList.allItems[idx]);
+    List<ItemData> selectedItems = [];
+    List<ItemData> notSelectedImages = [];
+    for (var idx = 0; idx < itemDataList.allItems.length; idx++) {
+      if (itemDataList.selectedIdx.contains(idx)) {
+        selectedItems.add(itemDataList.allItems[idx]);
+      } else {
+        notSelectedImages.add(itemDataList.allItems[idx]);
+      }
     }
 
     return Scaffold(
@@ -86,9 +91,9 @@ class AISelectionScreen extends StatelessWidget {
       ),
       body: ListView.builder(
         padding: const EdgeInsets.all(8.0),
-        itemCount: images.length,
+        itemCount: selectedItems.length,
         itemBuilder: (context, index) {
-          final item = images[index];
+          final item = selectedItems[index];
           return Card(
             margin: const EdgeInsets.symmetric(vertical: 4.0),
             child: ListTile(
@@ -108,7 +113,8 @@ class AISelectionScreen extends StatelessWidget {
                   arguments: {
                     'item': item,
                     'imagePath': item.image!.path,
-                    'description': item.item, // You can pass other details as well
+                    'description':
+                        item.item, // You can pass other details as well
                   },
                 );
               },
@@ -128,4 +134,3 @@ class AISelectionScreen extends StatelessWidget {
     );
   }
 }
-

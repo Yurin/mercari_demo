@@ -13,6 +13,7 @@ class ListingScreen extends StatefulWidget {
 
 class _ListingScreenState extends State<ListingScreen> {
   Stream<String>? descriptionStream;
+  Stream<String>? keywordStream;
 
   @override
   void didChangeDependencies() {
@@ -22,14 +23,16 @@ class _ListingScreenState extends State<ListingScreen> {
     if (routeArgs != null) {
       final Map<String, dynamic> args = routeArgs as Map<String, dynamic>;
       final ItemData item = args['item'];
-      _fetchDescription(item.imageName, item.image!);
+      _fetchDescriptionAndKeywords(item.imageName, item.image!);
     }
   }
 
-  Future<void> _fetchDescription(String name, XFile images) async {
+  Future<void> _fetchDescriptionAndKeywords(String name, XFile images) async {
     var detailData = await _getImageDetail(name, images);
-    descriptionStream = _createDescriptionStream(detailData.details);
-    setState(() {});
+    setState(() {
+      descriptionStream = _createDescriptionStream(detailData.details);
+      keywordStream = _createKeywordStream(detailData.keywords.join(", "));
+    });
   }
 
   Future<DetailsData> _getImageDetail(String name, XFile images) async {
@@ -64,6 +67,13 @@ class _ListingScreenState extends State<ListingScreen> {
     for (int i = 0; i <= detail.length; i++) {
       await Future.delayed(const Duration(milliseconds: 50));
       yield detail.substring(0, i);
+    }
+  }
+
+  Stream<String> _createKeywordStream(String keywords) async* {
+    for (int i = 0; i <= keywords.length; i++) {
+      await Future.delayed(const Duration(milliseconds: 50));
+      yield keywords.substring(0, i);
     }
   }
 
@@ -120,6 +130,33 @@ class _ListingScreenState extends State<ListingScreen> {
                       } else {
                         return Text(
                           'item: ${snapshot.data}',
+                          style: const TextStyle(fontSize: 16.0),
+                        );
+                      }
+                    },
+                  ),
+            const SizedBox(height: 16.0),
+            keywordStream == null
+                ? const Text(
+                    'Loading keywords...',
+                    style: TextStyle(fontSize: 16.0),
+                  )
+                : StreamBuilder<String>(
+                    stream: keywordStream,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Text(
+                          'Loading keywords...',
+                          style: TextStyle(fontSize: 16.0),
+                        );
+                      } else if (snapshot.hasError) {
+                        return Text(
+                          'Error: ${snapshot.error}',
+                          style: const TextStyle(fontSize: 16.0),
+                        );
+                      } else {
+                        return Text(
+                          'Keywords: ${snapshot.data}',
                           style: const TextStyle(fontSize: 16.0),
                         );
                       }
