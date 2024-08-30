@@ -2,6 +2,8 @@
 
 A new Flutter project.
 
+URL: [https://yurin.github.io/mercari_demo/](https://yurin.github.io/mercari_demo/)
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
